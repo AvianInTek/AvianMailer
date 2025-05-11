@@ -1,8 +1,9 @@
 
 import jwt from 'jsonwebtoken';
 import { NextRequest } from 'next/server';
+import { config } from './config';
 
-const JWT_SECRET = process.env.JWT_SECRET!;
+const JWT_SECRET = config.JWT_SECRET!;
 
 export function generateToken(userId: string): string {
   return jwt.sign({ userId }, JWT_SECRET, { expiresIn: '12h' });
@@ -18,13 +19,11 @@ export async function verifyToken(token: string): Promise<string | null> {
 }
 
 
-export async function verifyEmailIdentity(req: NextRequest): Promise<any> {
-  const token = req.headers.get('identity')?.split(' ')[1].replace("Bearer ", "");
-  console.log("token", token)
+export async function verifyEmailIdentity(token: string): Promise<any> {
   if (!token) return false;
 
   try {
-    if (token === process.env.TOKEN_AUTH_IDENTITY) {
+    if (token === config.TOKEN_AUTH_IDENTITY) {
       return true;
     }
     return false;

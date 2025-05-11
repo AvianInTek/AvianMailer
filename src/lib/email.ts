@@ -1,7 +1,4 @@
-
-
-
-
+import { config } from "./config"
 
 export async function fetchEmails(): Promise<any> {
     try {
@@ -28,11 +25,16 @@ export async function fetchEmails(): Promise<any> {
 
 export async function saveEmail(emailData: any): Promise<any> {
     try {
+      // console.log(process.env.TOKEN_AUTH_IDENTITY, config.TOKEN_AUTH_IDENTITY)
+      // emailData = {
+      //   ...emailData,
+      //   identity: `Bearer ${process.env.TOKEN_AUTH_IDENTITY}`,
+      // }
+      console.log("emailData", emailData)
       const response = await fetch("/api/email", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "identity": `Bearer ${process.env.TOKEN_AUTH_IDENTITY}`
         },
         body: JSON.stringify(emailData),
       })
