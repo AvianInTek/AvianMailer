@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { saveEmail } from "@/lib/email"
+import { TOKEN_AUTH_IDENTITY } from "@/lib/config"
 
 interface FormData {
   sender: string
@@ -97,7 +98,7 @@ export default function EmailForm() {
       })
       setIsEmailValid(null)
 
-      var send = await saveEmail(formData)
+      var send = await saveEmail({ ...formData, identity: process.env.NEXT_PUBLIC_TOKEN_AUTH_IDENTITY })
       if (send.success) {
         alert("Message sent successfully!")
         window.location.href = "/dashboard";

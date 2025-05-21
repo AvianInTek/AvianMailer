@@ -8,14 +8,17 @@ export interface EmailData {
     body: string
     status: boolean
     sentOn: Date
+    failed: boolean
 }
   
 export interface EmailStats {
-    total: number
-    successful: number
-    failed: number
-    successRate: number
-    failureRate: number
-    avgDeliveryTime: number
-    totalIncrease: number
+  total: number;
+  successful: number;
+  failed: number;
+  notSent: number;
+  successRate: number;
+  failureRate: number;
+  notSentRate: number;
+  avgDeliveryTime: number;
+  totalIncrease: number;
 }

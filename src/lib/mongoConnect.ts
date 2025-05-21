@@ -1,18 +1,18 @@
 // lib/mongoConnect.ts
 import { MongoClient } from 'mongodb';
-import { config } from './config';
+import { MONGODB_DB, MONGODB_URI } from './config';
 
-const uri = config.MONGODB_URI as string;
-const dbName = config.MONGODB_DB as string;
+const uri = MONGODB_URI as string;
+const dbName = MONGODB_DB as string;
 
 let client: MongoClient;
 let clientPromise: Promise<MongoClient>;
 
-if (!config.MONGODB_URI) {
+if (!MONGODB_URI) {
   throw new Error('Please add your Mongo URI to .env.local');
 }
 
-if (!config.MONGODB_DB) {
+if (!MONGODB_DB) {
   throw new Error('Please add your Mongo DB Name to .env.local');
 }
 
@@ -21,7 +21,7 @@ declare global {
   var _mongoClientPromise: Promise<MongoClient> | undefined;
 }
 
-// if (config.NODE_ENV === 'development') {
+// if (NODE_ENV === 'development') {
 //   if (!global._mongoClientPromise) {
 //     client = new MongoClient(uri);
 //     global._mongoClientPromise = client.connect();

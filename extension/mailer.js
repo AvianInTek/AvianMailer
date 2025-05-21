@@ -16,20 +16,37 @@
         return new Promise(res => setTimeout(res, sec * 1000));
     }
 
-    // Step 1: Send a POST request to an API
-    const apiUrl = "https://your-api-endpoint.com"; // Replace with actual API URL
-    const requestBody = {
-        key1: "value1",  // Example key-value pairs
-        key2: "value2",
-    };
+    const apiUrl = "http://localhost:3000/api/email";
+    const identity = "your_identity"; 
 
-  // const emailAddress = 'recipient@example.com';
-  //   const subjectText = 'Auto-Generated Email';
-  //   const bodyText = 'fdsv';
+    async function update(id, status) {
+        GM_xmlhttpRequest({
+            method: "PUT",
+            url: apiUrl,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            data: JSON.stringify({
+              _id: id,
+              identity: identity,
+              status: status
+            }),
+            onload: function(response) {
+                const responseData = JSON.parse(response.responseText);
+                if (responseData && responseData.success) {
+                    return true;
+                } else {
+                    return false;
+                }
+            },
+            onerror: function(error) {
+                return false;
+            }
+        });
+        return false;
+    }
 
-
-    async function composeAndSend(emailAddress, subjectText, bodyText) {
-        // Wait for Gmail to fully load
+    async function composeAndSend(id, emailAddress, subjectText, bodyText) {
         await wait(4);
 
         const composeButton = document.querySelector('.T-I.T-I-KE.L3');
@@ -47,26 +64,21 @@
         const bodyDiv = document.querySelector('div[aria-label="Message Body"]');
 
         if (toInput && subjectInput && bodyDiv) {
-            // To
             toInput.focus();
             toInput.value = emailAddress;
             toInput.dispatchEvent(new Event('input', { bubbles: true }));
-
-            // Subject
             subjectInput.focus();
             subjectInput.value = subjectText;
             subjectInput.dispatchEvent(new Event('input', { bubbles: true }));
-
-            // Body
             bodyDiv.focus();
             document.execCommand('insertText', false, bodyText);
-
-            // Click Send
             await wait(1);
             const sendButton = document.querySelector('div[aria-label^="Send"][role="button"]');
             if (sendButton) {
                 sendButton.click();
+                await update(id, true);
             } else {
+                await update(id, false);
                 console.error("Send button not found.");
             }
             return;
@@ -76,33 +88,34 @@
         console.error("Failed to find all compose fields after multiple attempts.");
     }
 
+    async function sending() {
+       GM_xmlhttpRequest({
+           method: "GET",
+           url: apiUrl,
+           headers: {
+               "Content-Type": "application/json",
+               "identity": identity
+           },
+           onload: function(response) {
+               const responseData = JSON.parse(response.responseText);
+               if (responseData && responseData.success) {
+                  responseData.emails.map((email) => {
+                      if (document.querySelector('.T-I.T-I-KE.L3')) {
+                          clearInterval(checkInterval);
+                          composeAndSend(email._id, email.recipient, email.subject, email.body);
+                      }
+                  });
+               } else {
+                   console.log('No data or unsuccessful response.');
+               }
+           },
+           onerror: function(error) {
+               console.error('Error sending request:', error);
+           }
+       });
+    }
 
-    // GM_xmlhttpRequest({
-    //     method: "POST",
-    //     url: apiUrl,
-    //     headers: {
-    //         "Content-Type": "application/json",
-    //     },
-    //     data: JSON.stringify(requestBody),
-    //     onload: function(response) {
-            // const responseData = JSON.parse(response.responseText);
-
-            // if (responseData && responseData.success) {
-
-                const checkInterval = setInterval(() => {
-                    if (document.querySelector('.T-I.T-I-KE.L3')) {
-                        clearInterval(checkInterval);
-                        composeAndSend("alicejacobcape@gmail.com", "Test", "Test");
-                    }
-                }, 1000);
-
-
-            // } else {
-            //     console.log('No data or unsuccessful response.');
-            // }
-        // },
-    //     onerror: function(error) {
-    //         console.error('Error sending request:', error);
-    //     }
-    // });
+    const checkInterval = setInterval(() => {
+        sending();
+    }, 1000);
 })();

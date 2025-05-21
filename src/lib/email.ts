@@ -1,4 +1,4 @@
-import { config } from "./config"
+import {  } from "./config"
 
 export async function fetchEmails(): Promise<any> {
     try {

@@ -1,17 +1,17 @@
 
 import jwt from 'jsonwebtoken';
 import { NextRequest } from 'next/server';
-import { config } from './config';
+import { JWT_SECRET, TOKEN_AUTH_IDENTITY } from './config';
 
-const JWT_SECRET = config.JWT_SECRET!;
+var JWT_HIDDEN_SECRET = JWT_SECRET!;
 
 export function generateToken(userId: string): string {
-  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: '12h' });
+  return jwt.sign({ userId }, JWT_HIDDEN_SECRET, { expiresIn: '12h' });
 }
 
 export async function verifyToken(token: string): Promise<string | null> { 
   try {
-      const decoded = jwt.verify(token, JWT_SECRET) as jwt.JwtPayload & { userId?: string };
+      const decoded = jwt.verify(token, JWT_HIDDEN_SECRET) as jwt.JwtPayload & { userId?: string };
       return decoded.userId || null;
   } catch (error) {
       return null;
@@ -23,7 +23,7 @@ export async function verifyEmailIdentity(token: string): Promise<any> {
   if (!token) return false;
 
   try {
-    if (token === config.TOKEN_AUTH_IDENTITY) {
+    if (token === TOKEN_AUTH_IDENTITY) {
       return true;
     }
     return false;
