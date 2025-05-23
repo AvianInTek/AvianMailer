@@ -1,6 +1,9 @@
 import { getMongoClient } from '@/lib/mongoConnect';
 import { EmailData, EmailStats } from '@/models/data';
 import { NextRequest, NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
+import { verifyToken } from '@/lib/auth';
+import { ObjectId } from 'mongodb';
 
 
 async function getEmailStats(): Promise<{ emailData: EmailData[]; stats: EmailStats }> {
@@ -41,6 +44,19 @@ async function getEmailStats(): Promise<{ emailData: EmailData[]; stats: EmailSt
   
 
 export async function GET(_req: NextRequest) {
+  var token = (await cookies()).get('token')
+  if (!token) {
+    return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 })
+  }
+  var id = await verifyToken(token.value)
+  if (!id) {
+    return NextResponse.json({ success: false, message: "Invalid id!" }, { status: 401 })
+  }
+  var db = await getMongoClient()
+  var user = await db.collection("user").findOne({ _id: new ObjectId(String(id)) })
+  if(!user) {
+    return NextResponse.json({ success: false, message: "User not available!" }, { status: 401 })
+  }
   var data = await getEmailStats()
   return NextResponse.json({ success: true, data });
 }
