@@ -33,10 +33,7 @@ export default function EmailForm() {
 
   // List of sender options
   const senderOptions = [
-    { value: "notifications@company.com", label: "Notifications" },
-    { value: "support@company.com", label: "Support" },
-    { value: "marketing@company.com", label: "Marketing" },
-    { value: "no-reply@company.com", label: "No Reply" },
+    { value: "no-reply@avianintek.com", label: "Notifications" },
   ]
 
   // Email validation function
