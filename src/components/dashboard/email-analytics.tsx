@@ -41,24 +41,26 @@ export function EmailAnalytics({ data }: EmailAnalyticsProps) {
       <CardContent className="pb-4">
         <div className="h-[300px]">
           <ChartContainer>
-            <Chart className="h-[300px]">
-              <ChartPie
-                data={pieData}
-                dataKey="value"
-                nameKey="name"
-                innerRadius={70}
-                outerRadius={90}
-                paddingAngle={2}
-              />
-              <ChartTooltip />
-            </Chart>
-            <div className="mt-4">
-              <ChartLegend>
-                {pieData.map((entry, index) => (
-                  <ChartLegendItem key={`item-${index}`} color={entry.color} name={entry.name} />
-                ))}
-              </ChartLegend>
-            </div>
+            <>
+              <Chart className="h-[300px]">
+                <ChartPie
+                  data={pieData}
+                  dataKey="value"
+                  nameKey="name"
+                  innerRadius={70}
+                  outerRadius={90}
+                  paddingAngle={2}
+                />
+                <ChartTooltip />
+              </Chart>
+              <div className="mt-4">
+                <ChartLegend>
+                  {pieData.map((entry, index) => (
+                    <ChartLegendItem key={`item-${index}`} color={entry.color} name={entry.name} />
+                  ))}
+                </ChartLegend>
+              </div>
+            </>
           </ChartContainer>
         </div>
       </CardContent>

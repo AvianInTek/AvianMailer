@@ -6,7 +6,10 @@ import { cookies } from 'next/headers';
 
 export async function POST(req: NextRequest) {
   const tokenCookie = (await cookies()).get('token');
-  if (!tokenCookie) return null;
+  if (!tokenCookie) return NextResponse.json(
+      { success: false, message: 'User need to be logged in!' },
+      { status: 401 }
+    );;
     
   const userId = await verifyToken(tokenCookie.value);
   if (!userId) {

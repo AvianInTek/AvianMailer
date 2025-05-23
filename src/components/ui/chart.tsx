@@ -1,7 +1,14 @@
 "use client"
 
 import type * as React from "react"
-import { ResponsiveContainer, PieChart, Pie, Tooltip, Legend, type LegendProps } from "recharts"
+import {
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Tooltip,
+  Legend,
+  type LegendProps,
+} from "recharts"
 
 interface ChartProps {
   children: React.ReactNode
@@ -13,7 +20,7 @@ export function Chart({ children, className }: ChartProps) {
 }
 
 interface ChartContainerProps {
-  children: React.ReactNode
+  children: React.ReactElement
 }
 
 export function ChartContainer({ children }: ChartContainerProps) {
@@ -33,7 +40,14 @@ interface ChartPieProps {
   paddingAngle: number
 }
 
-export function ChartPie({ data, dataKey, nameKey, innerRadius, outerRadius, paddingAngle }: ChartPieProps) {
+export function ChartPie({
+  data,
+  dataKey,
+  nameKey,
+  innerRadius,
+  outerRadius,
+  paddingAngle,
+}: ChartPieProps) {
   return (
     <PieChart>
       <Pie
@@ -47,6 +61,8 @@ export function ChartPie({ data, dataKey, nameKey, innerRadius, outerRadius, pad
         paddingAngle={paddingAngle}
         fill="#8884d8"
       />
+      <ChartTooltip />
+      <ChartLegend />
     </PieChart>
   )
 }
@@ -60,7 +76,7 @@ interface ChartLegendProps {
 }
 
 export function ChartLegend({ children }: ChartLegendProps) {
-  return <Legend content={renderLegend} />
+  return <Legend content={renderLegend as any} />
 }
 
 interface ChartLegendItemProps {
@@ -71,20 +87,27 @@ interface ChartLegendItemProps {
 export function ChartLegendItem({ color, name }: ChartLegendItemProps) {
   return (
     <div className="flex items-center space-x-2">
-      <span className="block h-2 w-2 rounded-full" style={{ backgroundColor: color }} />
+      <span
+        className="block h-2 w-2 rounded-full"
+        style={{ backgroundColor: color }}
+      />
       <span>{name}</span>
     </div>
   )
 }
 
-const renderLegend = (props: LegendProps) => {
+const renderLegend = (props: LegendProps): React.ReactNode => {
   const { payload } = props
   if (!payload) return null
 
   return (
     <div className="flex flex-col">
-      {payload.map((entry: any, index: any) => (
-        <ChartLegendItem key={`item-${index}`} color={entry.color} name={entry.value} />
+      {payload.map((entry: any, index: number) => (
+        <ChartLegendItem
+          key={`item-${index}`}
+          color={entry.color}
+          name={entry.value}
+        />
       ))}
     </div>
   )
